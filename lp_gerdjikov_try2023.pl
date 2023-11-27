@@ -92,6 +92,35 @@ max_incr_subseq(L,IS):-gen_incr_subseq(L,IS),len(IS,N),not(not_max_incr_subseq(L
 is_edge(U,V,E):-mem2(E,[U,V]).
 is_edge(U,V,E):-mem2(E,[V,U]).
 
+% is_path(V,E,P) - given a sequence, P, of vertices, checks P is a path
+% in (V,E)
+is_not_path(V,E,P):-concat1(_,[U,U1|_],P),not(is_edge(U,U1,E)).
+is_path(V,E,P):-P=[_|_],not(is_not_path(V,E,P)).
+% gen_path(V,E,P) given a graph G=(V,E), generates in P all the paths in
+% G. The idea is to generate a sequence of vertices in P and check
+% whether P is a path.
+gen_seq_vertices(V,0,[]).
+gen_seq_vertices(V,N,[A|T]):-N>0,mem2(V,A),N1 is N-1,gen_seq_vertices(V,N1,T).
+%generate N, natural number:
+natural(0).
+natural(X):-natural(Y),X is Y+1.
+gen_all_seq_vertices(V,P):-natural(N),gen_seq_vertices(V,N,P).
+gen_path(V,E,P):-gen_all_seq_vertices(V,P),is_path(V,E,P).
+is_not_surjective(V,P):-mem2(V,U),not(mem2(P,U)).
+has_duplicates(P):-concat1(_,[U|T],P),concat1(_,[U|_],T).
+hamiltonian_path(V,E,P):-len(V,N),gen_seq_vertices(V,N,P),is_path(V,E,P),not(is_not_surjective(V,P)).
+
+hamiltonian_path1(V,E,P):-perm(V,P),is_path(V,E,P).
+
+
+
+
+
+
+
+
+
+
 
 
 
